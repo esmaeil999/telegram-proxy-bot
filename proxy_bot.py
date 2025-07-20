@@ -8,7 +8,6 @@ import os
 
 TOKEN = os.getenv("BOT_TOKEN", "توکن_ربات_اینجا")
 
-# تنظیمات لاگ
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
@@ -23,7 +22,7 @@ async def send_proxy_list():
         proxies = response.text.strip()
         if proxies:
             print("🔗 Sending proxy list...")
-            # اینجا جای ارسال به کاربره
+            # اینجا می‌تونی کد ارسال پروکسی‌ها به کاربر رو بذاری
         else:
             print("⚠️ No proxies found.")
     except Exception as e:
@@ -42,4 +41,6 @@ async def main():
     await app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    loop.create_task(main())
+    loop.run_forever()
