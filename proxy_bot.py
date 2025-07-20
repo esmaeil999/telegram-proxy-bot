@@ -1,12 +1,12 @@
-import asyncio
 import logging
+import os
+import requests
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import requests
-import os
 
-TOKEN = os.getenv("BOT_TOKEN", "توکن_ربات_اینجا")
+TOKEN = os.getenv("BOT_TOKEN")  # توکن باید توی متغیر محیطی BOT_TOKEN باشه
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -18,11 +18,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def send_proxy_list():
     try:
-        response = requests.get("https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all")
+        response = requests.get(
+            "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=all"
+        )
         proxies = response.text.strip()
         if proxies:
+            # اینجا آیدی چت یا یوزر رو بذار برای ارسال
             print("🔗 Sending proxy list...")
-            # اینجا می‌تونی کد ارسال پروکسی‌ها به کاربر رو بذاری
+            # مثال ارسال به کانال یا یوزر: 
+            # await app.bot.send_message(chat_id=CHAT_ID, text=proxies)
         else:
             print("⚠️ No proxies found.")
     except Exception as e:
@@ -34,10 +38,10 @@ async def main():
     app.add_handler(CommandHandler("start", start))
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_proxy_list, 'interval', hours=4)
+    scheduler.add_job(send_proxy_list, "interval", hours=4)
     scheduler.start()
 
-    print("✅ Proxy Bot started. Waiting for commands...")
+    logging.info("✅ Proxy Bot started. Waiting for commands...")
     await app.run_polling()
 
 if __name__ == "__main__":
